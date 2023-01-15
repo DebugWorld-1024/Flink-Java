@@ -1,5 +1,6 @@
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -14,7 +15,13 @@ public class BatchWCApp {
         stringDataSource.flatMap(new EnvFlatMapFunction())
                 .map(new EnvMapFunction())
                 .groupBy(0)
-                .sum(1)
+                .reduce(new ReduceFunction<Tuple2<String, Integer>>() {
+                    @Override
+                    public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2) throws Exception {
+                        return new Tuple2<>(value1.f0, value1.f1 + value2.f1);
+                    }
+                })
+//                .sum(1)
                 .print();
 
 //        env.execute("BatchWCApp");
