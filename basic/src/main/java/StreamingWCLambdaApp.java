@@ -17,6 +17,21 @@ public class StreamingWCLambdaApp {
 
         DataStreamSource<String> stringDataStreamSource = env.socketTextStream("127.0.0.1", 9527);
 
+        stringDataStreamSource.flatMap((String s, Collector<String> collector) ->
+                {
+                    String[] worlds = s.split(" ");
+                    for (String world : worlds) {
+                        collector.collect(world.toLowerCase().trim());
+                    }
+                })
+                .returns(Types.STRING)
+                .filter(StringUtils::isNotBlank)
+                .returns(Types.STRING)
+                .map(s -> new Tuple2<>(s,1))
+                .returns(Types.TUPLE(Types.STRING,Types.INT))
+                .keyBy(stringIntegerTuple2 -> stringIntegerTuple2.f0)
+                .sum(1).print();
+        /*
         stringDataStreamSource.flatMap((FlatMapFunction<String, String>) (String s, Collector<String> collector) ->
                 {
                     String[] worlds = s.split(" ");
@@ -31,6 +46,7 @@ public class StreamingWCLambdaApp {
                 .returns(Types.TUPLE(Types.STRING,Types.INT))
                 .keyBy((KeySelector<Tuple2<String, Integer>, String>) stringIntegerTuple2 -> stringIntegerTuple2.f0)
                 .sum(1).print();
+         */
 
         env.execute("StreamingWCLambdaApp");
     }
