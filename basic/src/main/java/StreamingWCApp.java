@@ -12,12 +12,13 @@ import org.apache.flink.util.Collector;
 public class StreamingWCApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(2);
 
         DataStreamSource<String> stringDataStreamSource = env.socketTextStream("127.0.0.1", 9527);
         stringDataStreamSource.flatMap(new FlatMapFunction<String, String>() {
             @Override
             public void flatMap(String s, Collector<String> collector) throws Exception {
-                String[] worlds = s.split(",");
+                String[] worlds = s.split(" ");
                 for (String world : worlds) {
                     collector.collect(world.toLowerCase().trim());
                 }
@@ -42,3 +43,6 @@ public class StreamingWCApp {
         env.execute("StreamingWCApp");
     }
 }
+
+// TODO Collector类型
+// TODO int... 类型
