@@ -24,9 +24,10 @@ public class StreamingWCLambdaApp {
                         collector.collect(world.toLowerCase().trim());
                     }
                 })
-                .returns(Types.STRING)
+                .returns(Types.STRING)              // Lambda表达式使用Java泛型时，就需要声明返回数据的类型。参数的泛型，Java编译器编译该代码时会进行参数类型擦除
                 .filter(StringUtils::isNotBlank)
                 .returns(Types.STRING)
+                .map(s -> s)                        // 返回值s不是泛型，就不需要returns
                 .map(s -> new Tuple2<>(s,1))
                 .returns(Types.TUPLE(Types.STRING,Types.INT))
                 .keyBy(stringIntegerTuple2 -> stringIntegerTuple2.f0)
