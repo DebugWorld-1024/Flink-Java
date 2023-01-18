@@ -10,6 +10,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>basic</module>
+        <module>test</module>
+        <module>datastream</module>
     </modules>
 
     <properties>
@@ -33,6 +35,12 @@
             <dependency>
                 <groupId>org.apache.flink</groupId>
                 <artifactId>flink-clients_${scala.binary.version}</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
                 <version>${flink.version}</version>
             </dependency>
 

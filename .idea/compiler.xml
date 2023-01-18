@@ -7,7 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="basic" />
+        <module name="test" />
+        <module name="datastream" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="src" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
