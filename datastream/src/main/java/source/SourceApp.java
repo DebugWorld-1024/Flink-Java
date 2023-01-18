@@ -13,8 +13,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
-
 import java.util.Properties;
+
 
 public class SourceApp {
     public static void main(String[] args) throws Exception {
@@ -39,7 +39,7 @@ public class SourceApp {
         // 添加 host.name=172.16.229.131
         // kafka-topics.sh --create --zookeeper master:2181 --replication-factor 1 --partitions 1 --topic wc_source_topic
         // kafka-console-producer.sh --broker-list master:9092 --topic wc_source_topic
-        // kafka-console-consumer.sh --bootstrap-server master:9092 --topic wc_source_topic
+        // kafka-console-consumer.sh --bootstrap-server master:9092 --topic wc_result_topic
         // System.out.println(stream.getParallelism());
         // stream.print();
 
