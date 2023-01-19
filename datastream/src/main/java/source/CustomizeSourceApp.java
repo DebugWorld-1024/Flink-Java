@@ -9,8 +9,9 @@ public class CustomizeSourceApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 //        DataStreamSource<Access> source = env.addSource(new AccessSource());
-        DataStreamSource<Access> source = env.addSource(new AccessSourceV2());
+//        DataStreamSource<Access> source = env.addSource(new AccessSourceV2());
 
+        DataStreamSource<MysqlData> source = env.addSource(new MysqlSource());
         System.out.println(source.getParallelism());
         source.print();
 
