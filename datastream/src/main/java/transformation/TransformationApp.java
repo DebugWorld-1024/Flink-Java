@@ -33,6 +33,7 @@ public class TransformationApp {
                 return new Access(time, domain, traffic);
             }
         });
+        map.map(new EnvRichMapFunction());          // RichFunction实现
 //        map.print("map");
 
         SingleOutputStreamOperator<Access> filter = map.filter(new FilterFunction<Access>() {
