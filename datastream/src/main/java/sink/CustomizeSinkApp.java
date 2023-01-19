@@ -5,6 +5,8 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.redis.RedisSink;
+import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
 import org.apache.flink.util.Collector;
 
 
@@ -31,6 +33,9 @@ public class CustomizeSinkApp {
                 .sum(1);
 
         result.addSink(new MySQLSink());
+
+        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("127.0.0.1").setPassword("123456").build();
+        result.addSink(new RedisSink<Tuple2<String, Integer>>(conf, new RedisSinkTmp()));
         env.execute("CustomizeSinkApp");
     }
 }
