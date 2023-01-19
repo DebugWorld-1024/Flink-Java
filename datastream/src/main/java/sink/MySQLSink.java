@@ -1,4 +1,4 @@
-package slink;
+package sink;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
@@ -9,7 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 
-public class MySQLSlink extends RichSinkFunction<Tuple2<String, Integer>> {
+public class MySQLSink extends RichSinkFunction<Tuple2<String, Integer>> {
     Connection connection;
     PreparedStatement insertStatement;
     PreparedStatement updateStatement;

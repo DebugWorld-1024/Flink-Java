@@ -1,4 +1,4 @@
-package slink;
+package sink;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -8,7 +8,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
 
-public class CustomizeSlinkApp {
+public class CustomizeSinkApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 //        DataStreamSource<String> source = env.readTextFile("data/input/word_count.txt");
@@ -30,8 +30,8 @@ public class CustomizeSlinkApp {
                 .keyBy(stringIntegerTuple2 -> stringIntegerTuple2.f0)
                 .sum(1);
 
-        result.addSink(new MySQLSlink());
-        env.execute("CustomizeSlinkApp");
+        result.addSink(new MySQLSink());
+        env.execute("CustomizeSinkApp");
     }
 }
 
