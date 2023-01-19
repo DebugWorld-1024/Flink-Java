@@ -4,10 +4,9 @@ import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.co.CoMapFunction;
 
 
 public class TransformationApp {
@@ -20,7 +19,25 @@ public class TransformationApp {
     }
 
     public static void transformation(StreamExecutionEnvironment env){
-        DataStreamSource<String> source = env.readTextFile("data/input/access.log");
+        DataStreamSource<String> source1 = env.readTextFile("data/input/access1.log");
+        DataStreamSource<String> source2 = env.readTextFile("data/input/access2.log");
+        DataStream<String> source = source1.union(source2);
+        // TODO
+        //  union: 多流合并，数据类型一致，
+        //  connect：双流合并，数据类型可以不一致，需要用到CoMap
+//        ConnectedStreams<String, String> source = source1.connect(source2);
+//        source.map(new CoMapFunction<String, String, String>() {
+//            @Override
+//            public String map1(String value) throws Exception {
+//                return value;
+//            }
+//
+//            @Override
+//            public String map2(String value) throws Exception {
+//                return value;
+//            }
+//        }).print();
+
         SingleOutputStreamOperator<Access> map = source.map(new MapFunction<String, Access>() {
             @Override
             public Access map(String value) throws Exception {
