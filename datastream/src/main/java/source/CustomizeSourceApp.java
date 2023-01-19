@@ -2,7 +2,6 @@ package source;
 
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import transformation.Access;
 
 
 public class CustomizeSourceApp {
@@ -11,7 +10,7 @@ public class CustomizeSourceApp {
 //        DataStreamSource<Access> source = env.addSource(new AccessSource());
 //        DataStreamSource<Access> source = env.addSource(new AccessSourceV2());
 
-        DataStreamSource<MysqlData> source = env.addSource(new MysqlSource());
+        DataStreamSource<MySQLData> source = env.addSource(new MySQLSource());
         System.out.println(source.getParallelism());
         source.print();
 

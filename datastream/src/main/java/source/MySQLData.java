@@ -1,11 +1,11 @@
 package source;
 
-public class MysqlData {
+public class MySQLData {
     private int id;
     private String exchange_name;
     private String exchange_url;
 
-    public MysqlData(int id, String exchange_name, String exchange_url) {
+    public MySQLData(int id, String exchange_name, String exchange_url) {
         this.id = id;
         this.exchange_name = exchange_name;
         this.exchange_url = exchange_url;

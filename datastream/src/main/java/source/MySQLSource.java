@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 
-public class MysqlSource extends RichSourceFunction<MysqlData> {
+public class MySQLSource extends RichSourceFunction<MySQLData> {
     Connection connection;
     PreparedStatement statement;
 
@@ -25,13 +25,13 @@ public class MysqlSource extends RichSourceFunction<MysqlData> {
     }
 
     @Override
-    public void run(SourceContext<MysqlData> ctx) throws Exception {
+    public void run(SourceContext<MySQLData> ctx) throws Exception {
         ResultSet rs = statement.executeQuery();
         while (rs.next()){
             int id = rs.getInt("id");
             String exchange_name = rs.getString("exchange_name");
             String exchange_url = rs.getString("exchange_url");
-            ctx.collect(new MysqlData(id, exchange_name, exchange_url));
+            ctx.collect(new MySQLData(id, exchange_name, exchange_url));
         }
     }
 
