@@ -12,6 +12,7 @@
         <module>basic</module>
         <module>test</module>
         <module>datastream</module>
+        <module>project</module>
     </modules>
 
     <properties>
