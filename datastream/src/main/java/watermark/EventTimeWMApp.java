@@ -1,5 +1,4 @@
 package watermark;
-import org.apache.commons.lang3.text.CompositeFormat;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
