@@ -1,10 +1,7 @@
 package state;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.common.state.MapState;
-import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.state.*;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -83,7 +80,7 @@ class AvgWithValueState extends RichMapFunction<Tuple2<Long, Long>, Tuple2<Long,
     public void open(Configuration parameters) throws Exception {
         ValueStateDescriptor<Tuple2<Long, Long>> descriptor =
                 new ValueStateDescriptor<>(
-                        "average", // the state name
+                        "ValueState", // the state name
                         TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {})); // default value of the state, if nothing was set
         valueState = getRuntimeContext().getState(descriptor);
     }
@@ -98,7 +95,7 @@ class AvgWithValueState extends RichMapFunction<Tuple2<Long, Long>, Tuple2<Long,
         currentState.f0 += 1;
         currentState.f1 += value.f1;
         valueState.update(currentState);
-
+        // (1,6.0) (2,3.6666666666666665)
         return Tuple2.of(value.f0, currentState.f1 / currentState.f0.doubleValue());
     }
 }
@@ -106,16 +103,15 @@ class AvgWithValueState extends RichMapFunction<Tuple2<Long, Long>, Tuple2<Long,
 
 class AvgWithMapState extends RichMapFunction <Tuple2<Long, Long>,Tuple2<Long, Double>> {
 
-    // TODO Tuple2<Long, Long>
-    private transient MapState<String, String> mapState;
+    private transient MapState<String, Tuple2<Long, Long>> mapState;
 
     @Override
     public void open(Configuration parameters) throws Exception {
 
-        MapStateDescriptor<String, String> descriptor = new MapStateDescriptor<>(
-                "average", // the state name
-                String.class,
-                String.class
+        MapStateDescriptor<String, Tuple2<Long, Long>> descriptor = new MapStateDescriptor<>(
+                "MapState", // the state name
+                TypeInformation.of(new TypeHint<String>(){}),
+                TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {})
         );
         mapState = getRuntimeContext().getMapState(descriptor);
     }
@@ -123,17 +119,43 @@ class AvgWithMapState extends RichMapFunction <Tuple2<Long, Long>,Tuple2<Long, D
     @Override
     public Tuple2<Long, Double> map(Tuple2<Long, Long> value) throws Exception {
 
-        String s = mapState.get(value.f0.toString());
-        if (s == null){
-            s = "0,0";
+        Tuple2<Long, Long> tuple2 = mapState.get(value.f0.toString());
+        if (tuple2 == null){
+            tuple2 = Tuple2.of(0L, 0L);
         }
-        String[] splits = s.split(",");
 
-        long count = Integer.parseInt(splits[0].trim()) + 1;
-        long sum = Long.parseLong(splits[1].trim()) + value.f1;
+        long count = tuple2.f0 + 1;
+        long sum = tuple2.f1 + value.f1;
 //        key = UUID.randomUUID().toString();
 
-        mapState.put(value.f0.toString(), count + "," + sum);
+        mapState.put(value.f0.toString(), Tuple2.of(count, sum));
+        // (1,6.0) (2,3.6666666666666665)
+        return Tuple2.of(value.f0, sum / Double.parseDouble(String.valueOf(count)));
+    }
+}
+
+
+class AvgWithListState extends RichMapFunction<Tuple2<Long, Long>, Tuple2<Long, Double>> {
+    private transient ListState<Long> listState;
+
+    @Override
+    public void open(Configuration parameters) throws Exception {
+        ListStateDescriptor<Long> descriptor = new ListStateDescriptor<Long>("ListState", Long.class);
+        listState = getRuntimeContext().getListState(descriptor);
+    }
+
+    @Override
+    public Tuple2<Long, Double> map(Tuple2<Long, Long> value) throws Exception {
+        listState.add(value.f1);
+        Iterable<Long> currentState = listState.get();
+
+        long count = 0L;
+        long sum = 0L;
+        for (Long aLong : currentState) {
+            sum += aLong;
+            count += 1;
+        }
+        // (1,6.0) (2,3.6666666666666665)
         return Tuple2.of(value.f0, sum / Double.parseDouble(String.valueOf(count)));
     }
 }
