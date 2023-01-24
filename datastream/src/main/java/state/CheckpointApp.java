@@ -5,8 +5,11 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
+import org.apache.flink.runtime.state.memory.MemoryStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
@@ -17,7 +20,6 @@ public class CheckpointApp {
     public static void main(String[] args) throws Exception {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
 
         // 开启Checkpoint, TODO 5s之内丢失的呢
          env.enableCheckpointing(5000);
@@ -29,6 +31,14 @@ public class CheckpointApp {
                 3,                          // 尝试重启的次数
                 Time.of(5, TimeUnit.SECONDS)        // 延时
         ));
+
+        // new MemoryStateBackend(100, false);
+        env.setStateBackend(new FsStateBackend("file:///tmp/checkpoints"));
+//        env.setStateBackend(new FsStateBackend("hdfs://172.16.229.134:8020/checkpoints"));
+
+        // 当失败的是否保留checkpoint
+        env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+
         DataStreamSource<String> source = env.socketTextStream("127.0.0.1", 9527);
         source.map(new MapFunction<String, String>() {
             @Override
