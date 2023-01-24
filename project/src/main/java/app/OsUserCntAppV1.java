@@ -18,10 +18,11 @@ public class OsUserCntAppV1 {
                 .map(new MapFunction<String, Access>() {
                     @Override
                     public Access map(String value) throws Exception {
+                        // 注意事项：一定要考虑解析的容错性
                         try {
                             return JSON.parseObject(value, Access.class);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            e.printStackTrace();   // TODO  处理异常数据到某个地方
                             return null;
                         }
                     }
