@@ -5,6 +5,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.runtime.state.memory.MemoryStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
@@ -33,12 +34,12 @@ public class CheckpointApp {
         ));
 
         // new MemoryStateBackend(100, false);
-        env.setStateBackend(new FsStateBackend("file:///tmp/checkpoints"));
-//        env.setStateBackend(new FsStateBackend("hdfs://172.16.229.134:8020/checkpoints"));
+        // env.setStateBackend(new EmbeddedRocksDBStateBackend());
+        env.setStateBackend(new FsStateBackend("file:////Users/debugworld/Documents/HelloWorld/JavaProject/Flink-Java/data/checkpoints"));
+        // env.setStateBackend(new FsStateBackend("hdfs://172.16.229.134:8020/checkpoints"));
 
         // 当失败的是否保留checkpoint
         env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
-
         DataStreamSource<String> source = env.socketTextStream("127.0.0.1", 9527);
         source.map(new MapFunction<String, String>() {
             @Override
