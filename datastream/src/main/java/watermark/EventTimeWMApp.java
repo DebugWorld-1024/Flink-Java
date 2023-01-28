@@ -1,5 +1,7 @@
 package watermark;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -7,12 +9,17 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
+import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 
 /**
  *
@@ -21,7 +28,8 @@ import org.apache.flink.util.OutputTag;
 public class EventTimeWMApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        test01(env);
+//        test01(env);
+        test02(env);
 
         env.execute("EventTimeWMApp");
     }
@@ -74,5 +82,33 @@ public class EventTimeWMApp {
                 });
         result.print().setParallelism(1);
         result.getSideOutput(outputTag).printToErr();       // 侧流输出
+    }
+
+    public static void test02(StreamExecutionEnvironment env){
+        // 测试allowedLateness
+        DataStreamSource<String> source = env.socketTextStream("127.0.0.1", 9527);
+
+        source.assignTimestampsAndWatermarks(WatermarkStrategy.<String>forBoundedOutOfOrderness(Duration.ofSeconds(0)).withTimestampAssigner(new SerializableTimestampAssigner<String>() {
+            @Override
+            public long extractTimestamp(String element, long recordTimestamp) {
+                String format = "yyyy-MM-dd HH:mm:ss";
+                SimpleDateFormat sdf = new SimpleDateFormat(format);
+                try {
+                    return sdf.parse(element.split(",")[1].trim()).getTime();
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }))
+        .windowAll(TumblingEventTimeWindows.of(Time.seconds(10)))
+        .allowedLateness(Time.seconds(4))
+        .process(new ProcessAllWindowFunction<String, String, TimeWindow>() {
+            @Override
+            public void process(ProcessAllWindowFunction<String, String, TimeWindow>.Context context, Iterable<String> elements, Collector<String> out) throws Exception {
+                for (String element : elements)
+                    out.collect(element);
+            }
+        })
+        .print();
     }
 }
