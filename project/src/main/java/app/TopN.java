@@ -72,7 +72,8 @@ public class TopN {
 //        }))
         .keyBy(x -> x.f0)
 //        .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-        .window(SlidingEventTimeWindows.of(Time.seconds(5), Time.seconds(1)))
+        .window(SlidingEventTimeWindows.of(Time.seconds(10), Time.seconds(5)))
+//        .allowedLateness(Time.seconds(15))
         .reduce(new ReduceFunction<Tuple3<String, String, Long>>() {
             @Override
             public Tuple3<String, String, Long> reduce(Tuple3<String, String, Long> value1, Tuple3<String, String, Long> value2) throws Exception {
@@ -86,9 +87,11 @@ public class TopN {
             }
         })
         .windowAll(TumblingEventTimeWindows.of(Time.seconds(1)))
+//        .allowedLateness(Time.seconds(15))
         .process(new ProcessAllWindowFunction<Tuple5<String, String, Long, Long, Long>, List<Tuple4<String, Long, Long, Long>>, TimeWindow>() {
             @Override
             public void process(ProcessAllWindowFunction<Tuple5<String, String, Long, Long, Long>, List<Tuple4<String, Long, Long, Long>>, TimeWindow>.Context context, Iterable<Tuple5<String, String, Long, Long, Long>> elements, Collector<List<Tuple4<String, Long, Long, Long>>> out) throws Exception {
+                // TODO 数据通过dict去重复
                 List<Tuple5<String, String, Long, Long, Long>> list = new ArrayList<Tuple5<String, String, Long, Long, Long>>();
                 elements.forEach(list::add);
 
