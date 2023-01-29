@@ -29,7 +29,7 @@ public class SourceApp {
 //        env.setParallelism(1);
 
         Properties properties = new Properties();
-        properties.setProperty("bootstrap.servers", "172.16.229.131:9092");
+        properties.setProperty("bootstrap.servers", "172.16.229.134:9092");
         properties.setProperty("group.id", "test");
 
         DataStream<String> stream = env.addSource(
