@@ -36,7 +36,7 @@ public class SourceApp {
                 new FlinkKafkaConsumer<>("wc_source_topic", new SimpleStringSchema(), properties)
         );
         // vim server.properties
-        // 添加 host.name=172.16.229.131
+        // 添加 host.name=172.16.229.134
         // kafka-topics.sh --create --zookeeper master:2181 --replication-factor 1 --partitions 1 --topic wc_source_topic
         // kafka-console-producer.sh --broker-list master:9092 --topic wc_source_topic
         // kafka-console-consumer.sh --bootstrap-server master:9092 --topic wc_result_topic
