@@ -1,4 +1,5 @@
 package state;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.state.*;
@@ -6,6 +7,9 @@ import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.runtime.state.FunctionInitializationContext;
+import org.apache.flink.runtime.state.FunctionSnapshotContext;
+import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -39,7 +43,10 @@ public class StateApp {
         list.add(Tuple2.of(2L, 5L));
 
         DataStreamSource<Tuple2<Long, Long>> source = env.fromCollection(list);
-        source.keyBy(x -> x.f0).map(new AvgWithMapState()).print().setParallelism(1);
+        source.keyBy(x -> x.f0)
+        .map(new AvgWithMapState())
+        .map(new MapOperatorState())
+        .print().setParallelism(1);
     }
 
 }
@@ -157,5 +164,26 @@ class AvgWithListState extends RichMapFunction<Tuple2<Long, Long>, Tuple2<Long, 
         }
         // (1,6.0) (2,3.6666666666666665)
         return Tuple2.of(value.f0, sum / Double.parseDouble(String.valueOf(count)));
+    }
+}
+
+
+class MapOperatorState implements MapFunction<Tuple2<Long, Double>, Tuple2<Long, Double>>, CheckpointedFunction{
+    // Operator State 实现
+
+    @Override
+    public Tuple2<Long, Double> map(Tuple2<Long, Double> value) throws Exception {
+//        System.out.println("MapOperatorState");
+        return value;
+    }
+
+    @Override
+    public void snapshotState(FunctionSnapshotContext context) throws Exception {
+        System.out.println("snapshotState");
+    }
+
+    @Override
+    public void initializeState(FunctionInitializationContext context) throws Exception {
+        System.out.println("initializeState");
     }
 }
