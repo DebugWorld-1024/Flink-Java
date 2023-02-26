@@ -13,6 +13,7 @@
         <module>test</module>
         <module>datastream</module>
         <module>project</module>
+        <module>click-house</module>
     </modules>
 
     <properties>
