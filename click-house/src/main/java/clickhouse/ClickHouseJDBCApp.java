@@ -16,7 +16,7 @@ public class ClickHouseJDBCApp {
 
         String table_name = "user";
         statement.execute("DROP TABLE IF EXISTS " + table_name);
-        statement.execute("CREATE TABLE " + table_name + " (id UInt8 ,name String) ENGINE = Log");
+        statement.execute("CREATE TABLE " + table_name + " (id UInt8 ,name String) ENGINE = ReplacingMergeTree() ORDER BY id");
         statement.execute("insert into " + table_name + " (*) values (1, '张三'), (2, '李四'), (3, '王五')");
 
         ResultSet resultSet = statement.executeQuery("select * from " + table_name);
