@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="project" />
         <module name="datastream" />
+        <module name="datset" />
         <module name="basic" />
         <module name="test" />
         <module name="click-house" />
