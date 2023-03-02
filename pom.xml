@@ -15,6 +15,7 @@
         <module>project</module>
         <module>click-house</module>
         <module>datset</module>
+        <module>sql</module>
     </modules>
 
     <properties>

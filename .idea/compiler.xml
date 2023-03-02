@@ -6,12 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="project" />
         <module name="datastream" />
+        <module name="test" />
+        <module name="project" />
         <module name="datset" />
         <module name="basic" />
-        <module name="test" />
         <module name="click-house" />
+        <module name="sql" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
