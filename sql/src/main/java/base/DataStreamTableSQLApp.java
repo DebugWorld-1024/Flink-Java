@@ -46,7 +46,6 @@ public class DataStreamTableSQLApp {
         tableEnv.toRetractStream(resultTable, Row.class).print("row:");
 //        tableEnv.toRetractStream(resultTable, Row.class).filter(x -> x.f0).print("row:");
 
-
         /**
          * toRetractStream
          * 第一个字段boolean类型表示
