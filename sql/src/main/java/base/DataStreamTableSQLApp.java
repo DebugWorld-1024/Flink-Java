@@ -42,7 +42,7 @@ public class DataStreamTableSQLApp {
 
         Table table = tableEnv.fromDataStream(stream);
         tableEnv.createTemporaryView("access", table);
-        Table resultTable = tableEnv.sqlQuery("select domain, sum(traffic) as traffics from access group by domain");
+        Table resultTable = tableEnv.sqlQuery("SELECT domain, SUM(traffic) AS traffics FROM access GROUP BY domain");
         tableEnv.toRetractStream(resultTable, Row.class).print("row:");
 //        tableEnv.toRetractStream(resultTable, Row.class).filter(x -> x.f0).print("row:");
 
